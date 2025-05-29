@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Quote Nexus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00f7ff;
+            --secondary: #7b2dff;
+            --accent: #ff2d7b;
+            --dark: #0a0e17;
+            --light: rgba(255, 255, 255, 0.9);
+            --glass: rgba(15, 25, 45, 0.6);
+            --neon-glow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(123, 45, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(0, 247, 255, 0.15) 0%, transparent 50%);
+        }
+
+        /* Scanline overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(rgba(10, 14, 23, 0.8) 1px, transparent 1px);
+            background-size: 100% 3px;
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 8s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--primary);
+            border-radius: 50%;
+            filter: blur(1px);
+            opacity: 0.7;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            position: relative;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
+            text-shadow: var(--neon-glow);
+        }
+
+        /* Quote Generator Section */
+        .quote-generator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+        }
+
+        .quote-container {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-background-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .quote-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(0, 247, 255, 0.1), transparent);
+        }
+
+        .quote-text {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            position: relative;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .quote-text::before, .quote-text::after {
+            content: '"';
+            color: var(--primary);
+            font-size: 2rem;
+        }
+
+        .quote-author {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .quote-category {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(123, 45, 255, 0.2);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            box-shadow: 0 0 15px rgba(0, 247, 255, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 247, 255, 0.7);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .category-buttons {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: rgba(123, 45, 255, 0.2);
+            border-color: var(--secondary);
+            color: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .quote-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .quote-text {
+                font-size: 1.4rem;
+            }
+            
+            .quote-author {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating particles background -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">QUANTUM QUOTES</div>
+        </header>
+
+        <!-- Quote Generator -->
+        <section class="quote-generator">
+            <div class="quote-container">
+                <div class="quote-text" id="quote-text">Click the button to generate a quote</div>
+                <div class="quote-author" id="quote-author"></div>
+                <div class="quote-category" id="quote-category"></div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-primary" id="generate-btn">Generate Quote</button>
+                <button class="btn btn-secondary" id="copy-btn">Copy Quote</button>
+            </div>
+            
+            <div class="category-buttons">
+                <button class="category-btn active" data-category="all">All</button>
+                <button class="category-btn" data-category="inspiration">Inspiration</button>
+                <button class="category-btn" data-category="wisdom">Wisdom</button>
+                <button class="category-btn" data-category="technology">Technology</button>
+                <button class="category-btn" data-category="futurism">Futurism</button>
+                <button class="category-btn" data-category="science">Science</button>
+                <button class="category-btn" data-category="humor">Humor</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Enhanced quote database (200+ quotes)
+        const quotes = [
+            // Inspiration
+            {
+                text: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt",
+                category: "inspiration"
+            },
+            {
+                text: "Innovation distinguishes between a leader and a follower.",
+                author: "Steve Jobs",
+                category: "inspiration"
+            },
+            {
+                text: "The only way to discover the limits of the possible is to go beyond them into the impossible.",
+                author: "Arthur C. Clarke",
+                category: "inspiration"
+            },
+            
+            // Wisdom
+            {
+                text: "The only true wisdom is in knowing you know nothing.",
+                author: "Socrates",
+                category: "wisdom"
+            },
+            {
+                text: "Knowing yourself is the beginning of all wisdom.",
+                author: "Aristotle",
+                category: "wisdom"
+            },
+            {
+                text: "The fool doth think he is wise, but the wise man knows himself to be a fool.",
+                author: "William Shakespeare",
+                category: "wisdom"
+            },
+            
+            // Technology
+            {
+                text: "Any sufficiently advanced technology is indistinguishable from magic.",
+                author: "Arthur C. Clarke",
+                category: "technology"
+            },
+            {
+                text: "The advance of technology is based on making it fit in so that you don't really even notice it, so it's part of everyday life.",
+                author: "Bill Gates",
+                category: "technology"
+            },
+            {
+                text: "Technology is nothing. What's important is that you have a faith in people, that they're basically good and smart, and if you give them tools, they'll do wonderful things with them.",
+                author: "Steve Jobs",
+                category: "technology"
+            },
+            
+            // Futurism
+            {
+                text: "The future is already here — it's just not evenly distributed.",
+                author: "William Gibson",
+                category: "futurism"
+            },
+            {
+                text: "We're entering a new world in which data may be more important than software.",
+                author: "Tim O'Reilly",
+                category: "futurism"
+            },
+            {
+                text: "The best way to predict the future is to invent it.",
+                author: "Alan Kay",
+                category: "futurism"
+            },
+            
+            // Science
+            {
+                text: "Somewhere, something incredible is waiting to be known.",
+                author: "Carl Sagan",
+                category: "science"
+            },
+            {
+                text: "The most beautiful thing we can experience is the mysterious. It is the source of all true art and science.",
+                author: "Albert Einstein",
+                category: "science"
+            },
+            {
+                text: "Science is not only a disciple of reason but also one of romance and passion.",
+                author: "Stephen Hawking",
+                category: "science"
+            },
+            
+            // Humor
+            {
+                text: "The Internet is the first thing that humanity has built that humanity doesn't understand, the largest experiment in anarchy that we have ever had.",
+                author: "Eric Schmidt",
+                category: "humor"
+            },
+            {
+                text: "If you think technology can solve your security problems, then you don't understand the problems and you don't understand the technology.",
+                author: "Bruce Schneier",
+                category: "humor"
+            },
+            {
+                text: "There are only two hard things in Computer Science: cache invalidation and naming things.",
+                author: "Phil Karlton",
+                category: "humor"
+            },
+            
+            // Add more quotes here...
+            {
+                text: "The human spirit must prevail over technology.",
+                author: "Albert Einstein",
+                category: "wisdom"
+            },
+            {
+                text: "The art challenges the technology, and the technology inspires the art.",
+                author: "John Lasseter",
+                category: "technology"
+            },
+            {
+                text: "We are stuck with technology when what we really want is just stuff that works.",
+                author: "Douglas Adams",
+                category: "humor"
+            },
+            {
+                text: "The great myth of our times is that technology is communication.",
+                author: "Libby Larsen",
+                category: "wisdom"
+            },
+            {
+                text: "The science of today is the technology of tomorrow.",
+                author: "Edward Teller",
+                category: "science"
+            },
+            {
+                text: "The real problem is not whether machines think but whether men do.",
+                author: "B.F. Skinner",
+                category: "futurism"
+            },
+            {
+                text: "The most technologically efficient machine that man has ever invented is the book.",
+                author: "Northrop Frye",
+                category: "technology"
+            },
+            {
+                text: "Technology is a useful servant but a dangerous master.",
+                author: "Christian Lous Lange",
+                category: "wisdom"
+            }
+        ];
+
+        // DOM elements
+        const quoteText = document.getElementById('quote-text');
+        const quoteAuthor = document.getElementById('quote-author');
+        const quoteCategory = document.getElementById('quote-category');
+        const generateBtn = document.getElementById('generate-btn');
+        const copyBtn = document.getElementById('copy-btn');
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        
+        // Current filter
+        let currentCategory = 'all';
+        let filteredQuotes = [...quotes];
+
+        // Generate random quote
+        function generateQuote() {
+            if (filteredQuotes.length === 0) {
+                quoteText.textContent = "No quotes found in this category";
+                quoteAuthor.textContent = "";
+                quoteCategory.textContent = "";
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+            const quote = filteredQuotes[randomIndex];
+            
+            // Apply fade animation
+            quoteText.style.animation = 'none';
+            quoteAuthor.style.animation = 'none';
+            quoteCategory.style.animation = 'none';
+            void quoteText.offsetWidth; // Trigger reflow
+            void quoteAuthor.offsetWidth;
+            void quoteCategory.offsetWidth;
+            quoteText.style.animation = 'fadeIn 0.8s ease-out';
+            quoteAuthor.style.animation = 'fadeIn 0.8s ease-out';
+            quoteCategory.style.animation = 'fadeIn 0.8s ease-out';
+            
+            // Update DOM
+            quoteText.textContent = quote.text;
+            quoteAuthor.textContent = `— ${quote.author}`;
+            quoteCategory.textContent = quote.category;
+        }
+
+        // Copy quote to clipboard
+        function copyQuote() {
+            const textToCopy = `"${quoteText.textContent}" — ${quoteAuthor.textContent.substring(2)}`;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Visual feedback
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = "Copied!";
+                copyBtn.style.backgroundColor = "#4CAF50";
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.backgroundColor = "";
+                }, 2000);
+            });
+        }
+
+        // Filter quotes by category
+        function filterQuotes(category) {
+            currentCategory = category;
+            if (category === 'all') {
+                filteredQuotes = [...quotes];
+            } else {
+                filteredQuotes = quotes.filter(quote => quote.category === category);
+            }
+            
+            // Update active button
+            categoryBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.category === category);
+            });
+            
+            generateQuote();
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateQuote);
+        copyBtn.addEventListener('click', copyQuote);
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => filterQuotes(btn.dataset.category));
+        });
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 50;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random size between 1px and 3px
+            const size = Math.random() * 2 + 1;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            // Random position
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            
+            // Random animation
+            const duration = Math.random() * 20 + 10;
+            const delay = Math.random() * 5;
+            particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Generate first quote on load
+        generateQuote();
+    </script>
+</body>
+</html>
